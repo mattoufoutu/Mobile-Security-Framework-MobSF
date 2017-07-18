@@ -155,6 +155,12 @@ def get_env(request):
                         return HttpResponseRedirect('/error/')
                 else:
                     connect(toolsdir)
+                # Create a folder on sdcard to store analysis results
+                subprocess.call([adb,
+                                 "-s",
+                                 get_identifier(),
+                                 "shell",
+                                 "mkdir", "/sdcard/mobsf"])
                 # Change True to support non-activity components
                 install_and_run(toolsdir, app_path, package, launcher, True)
                 screen_width, screen_width = get_res()
@@ -196,12 +202,12 @@ def take_screenshot(request):
                                  "shell",
                                  "screencap",
                                  "-p",
-                                 "/data/local/screen.png"])
+                                 "/sdcard/mobsf/screen.png"])
                 subprocess.call([adb,
                                  "-s",
                                  get_identifier(),
                                  "pull",
-                                 "/data/local/screen.png",
+                                 "/sdcard/mobsf/screen.png",
                                  screen_dir + "screenshot-" + str(rand_int) + ".png"])
                 print "\n[INFO] Screenshot Taken"
                 data = {'screenshot': 'yes'}
@@ -393,7 +399,7 @@ def mobsf_ca(request):
                                  get_identifier(),
                                  "push",
                                  rootca,
-                                 "/data/local/tmp/" + settings.ROOT_CA])
+                                 "/sdcard/mobsf/" + settings.ROOT_CA])
                 if settings.ANDROID_DYNAMIC_ANALYZER == "MobSF_AVD":
                     # For some reason, avd emulator does not have cp binary
                     subprocess.call([adb,
@@ -402,7 +408,7 @@ def mobsf_ca(request):
                                      "shell",
                                      "/data/local/tmp/busybox",
                                      "cp",
-                                     "/data/local/tmp/" + settings.ROOT_CA,
+                                     "/sdcard/mobsf/" + settings.ROOT_CA,
                                      "/system/etc/security/cacerts/" + settings.ROOT_CA])
                     subprocess.call([adb,
                                      "-s",
@@ -419,7 +425,7 @@ def mobsf_ca(request):
                                      "su",
                                      "-c",
                                      "cp",
-                                     "/data/local/tmp/" + settings.ROOT_CA,
+                                     "/sdcard/mobsf/" + settings.ROOT_CA,
                                      "/system/etc/security/cacerts/" + settings.ROOT_CA])
                     subprocess.call([adb,
                                      "-s",
@@ -430,12 +436,13 @@ def mobsf_ca(request):
                                      "chmod",
                                      "644",
                                      "/system/etc/security/cacerts/" + settings.ROOT_CA])
+                # TODO: remove whole /sdcard/mobsf folder when dynamic analysis ends
                 subprocess.call([adb,
                                  "-s",
                                  get_identifier(),
                                  "shell",
                                  "rm",
-                                 "/data/local/tmp/" + settings.ROOT_CA])
+                                 "/sdcard/mobsf/" + settings.ROOT_CA])
                 data = {'ca': 'installed'}
             elif act == "remove":
                 print "\n[INFO] Removing MobSF RootCA"
@@ -494,8 +501,18 @@ def final_test(request):
                 subprocess.call([adb,
                                  "-s",
                                  get_identifier(),
-                                 "pull",
+                                 "shell",
+                                 "su",
+                                 "-c",
+                                 "cp",
                                  "/data/data/de.robv.android.xposed.installer/log/error.log",
+                                 "/sdcard/mobsf/error.log"
+                                 ])
+                subprocess.call([adb,
+                                 "-s",
+                                 get_identifier(),
+                                 "pull",
+                                 "/sdcard/mobsf/error.log",
                                  apk_dir + "x_logcat.txt"])
 
                 print "\n[INFO] Downloading Droidmon API Monitor Logcat logs"
@@ -600,8 +617,17 @@ def dump_data(request):
                 subprocess.call([adb,
                                  "-s",
                                  get_identifier(),
-                                 "pull",
+                                 "shell",
+                                 "su",
+                                 "-c",
+                                 "cp",
                                  "/data/local/" + package + ".tar",
+                                 "/sdcard/mobsf/" + package + ".tar"])
+                subprocess.call([adb,
+                                 "-s",
+                                 get_identifier(),
+                                 "pull",
+                                 "/sdcard/mobsf" + package + ".tar",
                                  apk_dir + package + ".tar"])
                 if settings.ANDROID_DYNAMIC_ANALYZER == "MobSF_AVD":
                     stop_avd(adb)
@@ -679,14 +705,14 @@ def exported_activity_tester(request):
                                      get_identifier(),
                                      "shell", "screencap",
                                      "-p",
-                                     "/data/local/screen.png"])
+                                     "/sdcard/mobsf/screen.png"])
                                 #? get appended from Air :-() if activity names are used
                                 subprocess.call(
                                     [adb,
                                      "-s",
                                      get_identifier(),
                                      "pull",
-                                     "/data/local/screen.png",
+                                     "/sdcard/mobsf/screen.png",
                                      screen_dir + "expact-" + str(exp_act_no) + ".png"])
                                 print "\n[INFO] Activity Screenshot Taken"
                                 subprocess.call(
@@ -774,14 +800,14 @@ def activity_tester(request):
                                      "shell",
                                      "screencap",
                                      "-p",
-                                     "/data/local/screen.png"])
+                                     "/sdcard/mobsf/screen.png"])
                                 #? get appended from Air :-() if activity names are used
                                 subprocess.call(
                                     [adb,
                                      "-s",
                                      get_identifier(),
                                      "pull",
-                                     "/data/local/screen.png",
+                                     "/sdcard/mobsf/screen.png",
                                      screen_dir + "act-" + str(act_no) + ".png"])
                                 print "\n[INFO] Activity Screenshot Taken"
                                 subprocess.call([adb,
