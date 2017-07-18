@@ -55,25 +55,25 @@ DB_DIR = os.path.join(MobSF_HOME, 'db.sqlite3')
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_DIR,
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': DB_DIR,
+#     }
+# }
 # Postgres DB - Install psycopg2
-'''
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'mobsf',
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'USER': 'mobsf',
+        'PASSWORD': 'mobsf',
+        'HOST': '127.0.0.1',
         'PORT': '',
     }
 }
-'''
+
 #===============================================
 
 #==========LOAD CONFIG FROM MobSF HOME==========
@@ -309,7 +309,7 @@ else:
     CFR_DECOMPILER_BINARY = ""
     JD_CORE_DECOMPILER_BINARY = ""
     PROCYON_DECOMPILER_BINARY = ""
-    ADB_BINARY = ""
+    ADB_BINARY = "/data/Tools/android-sdk/platform-tools/adb"
     ENJARIFY_DIRECTORY = ""
 
     # iOS 3P Tools
@@ -337,7 +337,7 @@ else:
 
     #========ANDROID DYNAMIC ANALYSIS SETTINGS================================
 
-    ANDROID_DYNAMIC_ANALYZER = "MobSF_VM"
+    ANDROID_DYNAMIC_ANALYZER = "MobSF_REAL_DEVICE"
 
     # You can choose any of the below
     # 1. MobSF_VM
@@ -353,7 +353,7 @@ else:
     #=========================================================================
 
     #=======ANDROID REAL DEVICE SETTINGS===========
-    DEVICE_IP = '192.168.1.18'
+    DEVICE_IP = '10.10.1.194'
     DEVICE_ADB_PORT = 5555
     DEVICE_TIMEOUT = 300
     #==============================================
@@ -384,7 +384,7 @@ else:
     #--------------------------
 
     #================HOST/PROXY SETTINGS ===============
-    PROXY_IP = '192.168.56.1'  # Host/Server/Proxy IP
+    PROXY_IP = '10.10.1.142'  # Host/Server/Proxy IP
     PORT = 1337  # Proxy Port
     ROOT_CA = '0025aabb.0'
     SCREEN_IP = PROXY_IP  # ScreenCast IP
